@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cycliqe - Your Wellness Companion{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    {% if session.user_id %}
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-circle-notch"></i>
+                <span>Cycliqe</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('cycle_calendar') }}" class="nav-link"><i class="fas fa-calendar"></i> Calendar</a></li>
+                <li><a href="{{ url_for('mood_logging') }}" class="nav-link"><i class="fas fa-smile"></i> Mood</a></li>
+                <li><a href="{{ url_for('wellness_streaks') }}" class="nav-link"><i class="fas fa-fire"></i> Streaks</a></li>
+                <li><a href="{{ url_for('education_hub') }}" class="nav-link"><i class="fas fa-book"></i> Education</a></li>
+                <li><a href="{{ url_for('ai_chat') }}" class="nav-link"><i class="fas fa-robot"></i> AI Chat</a></li>
+                <li><a href="{{ url_for('pregnancy_prediction') }}" class="nav-link"><i class="fas fa-baby"></i> Pregnancy</a></li>
+                <li><a href="{{ url_for('logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Cycliqe. Made with <i class="fas fa-heart"></i> for your wellness.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+

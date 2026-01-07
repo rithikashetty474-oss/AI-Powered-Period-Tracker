@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Education Hub - Cycliqe{% endblock %}
+
+{% block content %}
+<div class="education-container">
+    <div class="education-header">
+        <h1>Education Hub 📚</h1>
+        <p>Learn about menstrual health, wellness, and more</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search articles...">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="health">Health</button>
+            <button class="filter-btn" data-category="nutrition">Nutrition</button>
+            <button class="filter-btn" data-category="wellness">Wellness</button>
+            <button class="filter-btn" data-category="faq">FAQs</button>
+        </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="articles-grid" id="articlesGrid">
+        <!-- Articles will be loaded dynamically -->
+    </div>
+</div>
+
+<!-- Article Modal -->
+<div id="articleModal" class="modal">
+    <div class="modal-content modal-large">
+        <span class="close-modal">&times;</span>
+        <div id="articleContent">
+            <!-- Article content will be loaded here -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const articles = [
+        {
+            id: 1,
+            title: "Understanding Your Menstrual Cycle",
+            category: "health",
+            excerpt: "Learn about the phases of your menstrual cycle and what happens in your body each month.",
+            content: "Your menstrual cycle is a complex process that involves several phases. The cycle typically lasts 28 days, but can range from 21 to 35 days. The main phases include: Menstruation (days 1-5), Follicular Phase (days 1-13), Ovulation (day 14), and Luteal Phase (days 15-28). Understanding these phases can help you track your cycle more effectively and recognize patterns in your body.",
+            icon: "fas fa-heartbeat"
+        },
+        {
+            id: 2,
+            title: "Nutrition Tips for Period Health",
+            category: "nutrition",
+            excerpt: "Discover foods that can help manage period symptoms and support your overall health.",
+            content: "Eating a balanced diet rich in iron, calcium, and magnesium can help manage period symptoms. Foods like leafy greens, nuts, seeds, and whole grains are excellent choices. Staying hydrated and reducing processed foods can also make a significant difference in how you feel during your period.",
+            icon: "fas fa-apple-alt"
+        },
+        {
+            id: 3,
+            title: "Managing Mood Swings",
+            category: "wellness",
+            excerpt: "Practical strategies for dealing with emotional changes throughout your cycle.",
+            content: "Mood swings are common during the menstrual cycle, especially in the days leading up to your period. Regular exercise, adequate sleep, stress management techniques, and maintaining a healthy diet can all help stabilize your mood. Tracking your moods can also help you identify patterns and prepare for emotional changes.",
+            icon: "fas fa-smile"
+        },
+        {
+            id: 4,
+            title: "Exercise and Your Cycle",
+            category: "wellness",
+            excerpt: "How to adapt your workout routine to different phases of your menstrual cycle.",
+            content: "Your energy levels fluctuate throughout your cycle. During menstruation, gentle exercises like yoga or walking may feel better. As your energy increases, you can incorporate more intense workouts. Listening to your body and adjusting your routine accordingly is key to maintaining an active lifestyle.",
+            icon: "fas fa-dumbbell"
+        },
+        {
+            id: 5,
+            title: "Common Period FAQs",
+            category: "faq",
+            excerpt: "Answers to frequently asked questions about periods and menstrual health.",
+            content: "Q: Is it normal for cycle length to vary? A: Yes, cycle length can vary from month to month. Variations of a few days are normal. Q: When should I see a doctor? A: If you experience severe pain, very heavy bleeding, or cycles that are consistently irregular, it's a good idea to consult a healthcare provider.",
+            icon: "fas fa-question-circle"
+        },
+        {
+            id: 6,
+            title: "Sleep and Menstrual Health",
+            category: "wellness",
+            excerpt: "How your cycle affects sleep and tips for better rest during your period.",
+            content: "Hormonal changes during your cycle can affect sleep quality. During your period, you might experience more fatigue. Creating a bedtime routine, keeping your room cool, and avoiding screens before bed can help improve sleep. Some women find that using a heating pad or taking a warm bath before bed helps with discomfort.",
+            icon: "fas fa-bed"
+        }
+    ];
+
+    let filteredArticles = articles;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        renderArticles(articles);
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            filterArticles(searchTerm);
+        });
+        
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const category = this.dataset.category;
+                filterByCategory(category);
+            });
+        });
+        
+        // Modal close
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            document.getElementById('articleModal').style.display = 'none';
+        });
+    });
+
+    function renderArticles(articlesToRender) {
+        const grid = document.getElementById('articlesGrid');
+        grid.innerHTML = articlesToRender.map(article => `
+            <div class="article-card" data-category="${article.category}" onclick="openArticle(${article.id})">
+                <div class="article-icon">
+                    <i class="${article.icon}"></i>
+                </div>
+                <div class="article-category">${article.category.toUpperCase()}</div>
+                <h3>${article.title}</h3>
+                <p>${article.excerpt}</p>
+                <div class="article-read-more">
+                    Read More <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterArticles(searchTerm) {
+        const category = document.querySelector('.filter-btn.active').dataset.category;
+        filteredArticles = articles.filter(article => {
+            const matchesSearch = article.title.toLowerCase().includes(searchTerm) ||
+                                 article.excerpt.toLowerCase().includes(searchTerm);
+            const matchesCategory = category === 'all' || article.category === category;
+            return matchesSearch && matchesCategory;
+        });
+        renderArticles(filteredArticles);
+    }
+
+    function filterByCategory(category) {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        filteredArticles = articles.filter(article => {
+            const matchesSearch = article.title.toLowerCase().includes(searchTerm) ||
+                                 article.excerpt.toLowerCase().includes(searchTerm);
+            const matchesCategory = category === 'all' || article.category === category;
+            return matchesSearch && matchesCategory;
+        });
+        renderArticles(filteredArticles);
+    }
+
+    function openArticle(id) {
+        const article = articles.find(a => a.id === id);
+        if (article) {
+            document.getElementById('articleContent').innerHTML = `
+                <h2>${article.title}</h2>
+                <div class="article-meta">
+                    <span class="article-category-badge">${article.category.toUpperCase()}</span>
+                </div>
+                <div class="article-body">
+                    ${article.content.split('\n').map(p => `<p>${p}</p>`).join('')}
+                </div>
+            `;
+            document.getElementById('articleModal').style.display = 'block';
+        }
+    }
+
+    // Make openArticle available globally
+    window.openArticle = openArticle;
+</script>
+{% endblock %}
+

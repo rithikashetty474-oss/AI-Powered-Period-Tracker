@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Mood Logging - Cycliqe{% endblock %}
+
+{% block content %}
+<div class="mood-container">
+    <div class="mood-header">
+        <h1>How are you feeling today?</h1>
+        <p>Log your mood to track patterns and get insights</p>
+    </div>
+
+    <div class="mood-selector">
+        <div class="mood-options">
+            <div class="mood-option" data-mood="happy">
+                <div class="mood-emoji">😊</div>
+                <span>Happy</span>
+            </div>
+            <div class="mood-option" data-mood="sad">
+                <div class="mood-emoji">😢</div>
+                <span>Sad</span>
+            </div>
+            <div class="mood-option" data-mood="tired">
+                <div class="mood-emoji">😴</div>
+                <span>Tired</span>
+            </div>
+            <div class="mood-option" data-mood="anxious">
+                <div class="mood-emoji">😰</div>
+                <span>Anxious</span>
+            </div>
+            <div class="mood-option" data-mood="angry">
+                <div class="mood-emoji">😡</div>
+                <span>Angry</span>
+            </div>
+            <div class="mood-option" data-mood="excited">
+                <div class="mood-emoji">😍</div>
+                <span>Excited</span>
+            </div>
+            <div class="mood-option" data-mood="neutral">
+                <div class="mood-emoji">😐</div>
+                <span>Neutral</span>
+            </div>
+            <div class="mood-option" data-mood="calm">
+                <div class="mood-emoji">😌</div>
+                <span>Calm</span>
+            </div>
+        </div>
+    </div>
+
+    <form id="moodForm" class="mood-form">
+        <input type="hidden" id="selectedMood" name="mood" required>
+        
+        <div class="form-group">
+            <label for="moodDate">
+                <i class="fas fa-calendar"></i>
+                Date
+            </label>
+            <input type="date" id="moodDate" name="date" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="moodNotes">
+                <i class="fas fa-sticky-note"></i>
+                Notes (optional)
+            </label>
+            <textarea id="moodNotes" name="notes" rows="4" placeholder="How are you feeling? Any specific thoughts?"></textarea>
+        </div>
+        
+        <button type="submit" class="btn-primary btn-full" id="submitBtn" disabled>
+            <i class="fas fa-save"></i>
+            Save Mood Log
+        </button>
+    </form>
+
+    <div id="moodMessage" class="message" style="display: none;"></div>
+
+    <!-- Recent Mood History -->
+    <div class="mood-history">
+        <h2>Recent Mood History</h2>
+        <div id="moodHistoryList" class="history-list">
+            <p class="loading">Loading your mood history...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let selectedMoodValue = null;
+
+    // Set today's date as default
+    document.getElementById('moodDate').valueAsDate = new Date();
+
+    // Mood selection
+    document.querySelectorAll('.mood-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.mood-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedMoodValue = this.dataset.mood;
+            document.getElementById('selectedMood').value = selectedMoodValue;
+            document.getElementById('submitBtn').disabled = false;
+        });
+    });
+
+    // Form submission
+    document.getElementById('moodForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const messageDiv = document.getElementById('moodMessage');
+        
+        const moodEmojis = {
+            happy: '😊', sad: '😢', tired: '😴', anxious: '😰',
+            angry: '😡', excited: '😍', neutral: '😐', calm: '😌'
+        };
+        
+        const moodData = {
+            date: document.getElementById('moodDate').value,
+            mood_emoji: moodEmojis[selectedMoodValue] || '😐',
+            mood_text: selectedMoodValue,
+            notes: document.getElementById('moodNotes').value
+        };
+        
+        try {
+            const response = await fetch('/api/log-mood', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(moodData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                messageDiv.className = 'message success';
+                messageDiv.textContent = 'Mood logged successfully!';
+                messageDiv.style.display = 'block';
+                this.reset();
+                document.getElementById('moodDate').valueAsDate = new Date();
+                document.querySelectorAll('.mood-option').forEach(o => o.classList.remove('selected'));
+                document.getElementById('submitBtn').disabled = true;
+                selectedMoodValue = null;
+                loadMoodHistory();
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = data.message || 'Error logging mood';
+                messageDiv.style.display = 'block';
+            }
+        } catch (error) {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = 'An error occurred. Please try again.';
+            messageDiv.style.display = 'block';
+        }
+    });
+
+    // Load mood history
+    async function loadMoodHistory() {
+        try {
+            const response = await fetch('/api/get-moods');
+            const data = await response.json();
+            
+            if (data.success && data.moods && data.moods.length > 0) {
+                const moodEmojis = {
+                    happy: '😊', sad: '😢', tired: '😴', anxious: '😰',
+                    angry: '😡', excited: '😍', neutral: '😐', calm: '😌'
+                };
+                
+                const historyHtml = data.moods.slice(0, 10).map(mood => {
+                    const date = new Date(mood.date);
+                    return `
+                        <div class="history-item">
+                            <div class="history-emoji">${moodEmojis[mood.mood_text] || '😐'}</div>
+                            <div class="history-content">
+                                <strong>${mood.mood_text.charAt(0).toUpperCase() + mood.mood_text.slice(1)}</strong>
+                                <p>${date.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</p>
+                                ${mood.notes ? `<p class="history-notes">${mood.notes}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('moodHistoryList').innerHTML = historyHtml;
+            } else {
+                document.getElementById('moodHistoryList').innerHTML = '<p>No mood history yet. Start logging your moods!</p>';
+            }
+        } catch (error) {
+            console.error('Error loading mood history:', error);
+        }
+    }
+
+    // Load history on page load
+    document.addEventListener('DOMContentLoaded', loadMoodHistory);
+</script>
+{% endblock %}
+

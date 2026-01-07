@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Cycliqe{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome back, {{ username }}! 👋</h1>
+        <p class="dashboard-subtitle">Here's your wellness overview</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card stat-primary">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Day {{ current_day }}</h3>
+                <p>Current Cycle Day</p>
+            </div>
+        </div>
+        
+        <div class="stat-card stat-secondary">
+            <div class="stat-icon">
+                <i class="fas fa-fire"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ streak }}</h3>
+                <p>Day Streak</p>
+            </div>
+        </div>
+        
+        <div class="stat-card stat-accent">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{% if next_period %}{{ next_period.strftime('%b %d') }}{% else %}--{% endif %}</h3>
+                <p>Next Period Predicted</p>
+            </div>
+        </div>
+        
+        <div class="stat-card stat-success">
+            <div class="stat-icon">
+                <i class="fas fa-smile"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{% if moods %}{{ moods|length }}{% else %}0{% endif %}</h3>
+                <p>Moods Logged</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section-title">
+        <h2>Quick Actions</h2>
+    </div>
+    <div class="actions-grid">
+        <a href="{{ url_for('mood_logging') }}" class="action-card">
+            <i class="fas fa-smile"></i>
+            <h3>Log Mood</h3>
+            <p>Record how you're feeling today</p>
+        </a>
+        <a href="{{ url_for('cycle_calendar') }}" class="action-card">
+            <i class="fas fa-calendar"></i>
+            <h3>View Calendar</h3>
+            <p>See your cycle overview</p>
+        </a>
+        <a href="{{ url_for('ai_chat') }}" class="action-card">
+            <i class="fas fa-robot"></i>
+            <h3>AI Chat</h3>
+            <p>Ask questions about your health</p>
+        </a>
+        <a href="{{ url_for('wellness_streaks') }}" class="action-card">
+            <i class="fas fa-trophy"></i>
+            <h3>View Streaks</h3>
+            <p>Check your achievements</p>
+        </a>
+    </div>
+
+    <!-- Insights Section -->
+    <div class="section-title">
+        <h2>AI Insights</h2>
+    </div>
+    <div class="insights-container">
+        <div class="insight-card">
+            <div class="insight-header">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Personalized Tips</h3>
+            </div>
+            <div class="insight-content">
+                {% if wellness_tips %}
+                    {% for tip in wellness_tips %}
+                    <div class="insight-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ tip }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Start logging your mood and cycle to get personalized tips!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section-title">
+        <h2>Recent Activity</h2>
+    </div>
+    <div class="activity-container">
+        <div class="activity-list">
+            {% if cycles %}
+                {% for cycle in cycles[:5] %}
+                <div class="activity-item">
+                    <i class="fas fa-calendar"></i>
+                    <div>
+                        <strong>Period logged</strong>
+                        <p>{{ cycle.start_date }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+            {% if moods %}
+                {% for mood in moods[:3] %}
+                <div class="activity-item">
+                    <i class="fas fa-smile"></i>
+                    <div>
+                        <strong>Mood logged: {{ mood.mood_emoji }}</strong>
+                        <p>{{ mood.date }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+            {% if not cycles and not moods %}
+                <p>No recent activity. Start tracking your cycle and mood!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-refresh prediction if needed
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Optionally refresh prediction
+        try {
+            const response = await fetch('/api/predict-cycle');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.predicted_date) {
+                    // Prediction updated
+                    console.log('Cycle prediction updated');
+                }
+            }
+        } catch (error) {
+            console.log('Prediction refresh skipped');
+        }
+    });
+</script>
+{% endblock %}
+

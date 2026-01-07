@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}Fertility Prediction - Cycliqe{% endblock %}
+
+{% block content %}
+<div class="pregnancy-container">
+    <div class="pregnancy-header">
+        <div class="pregnancy-icon">
+            <i class="fas fa-baby"></i>
+        </div>
+        <h1>Fertility Prediction</h1>
+        <p>Answer a few questions to get personalized fertility insights</p>
+    </div>
+
+    <div id="pregnancyForm" class="pregnancy-form-container">
+        <form id="fertilityForm" class="pregnancy-form">
+            <!-- Question 1: Age -->
+            <div class="form-section">
+                <div class="question-header">
+                    <span class="question-number">1</span>
+                    <h3>What is your age?</h3>
+                </div>
+                <div class="form-group">
+                    <input type="number" id="age" name="age" min="18" max="50" required 
+                           placeholder="Enter your age" class="form-input">
+                    <small class="form-help">Age affects fertility. Optimal fertility is typically between 20-35 years.</small>
+                </div>
+            </div>
+
+            <!-- Question 2: Cycle Regularity -->
+            <div class="form-section">
+                <div class="question-header">
+                    <span class="question-number">2</span>
+                    <h3>How regular are your menstrual cycles?</h3>
+                </div>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="cycle_regularity" value="very_regular" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">Very Regular (21-35 days consistently)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="cycle_regularity" value="somewhat_regular" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">Somewhat Regular (varies by 2-7 days)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="cycle_regularity" value="irregular" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">Irregular (varies by more than 7 days)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="cycle_regularity" value="unknown" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">I don't track my cycles</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 3: Cycle Length -->
+            <div class="form-section">
+                <div class="question-header">
+                    <span class="question-number">3</span>
+                    <h3>What is your average cycle length?</h3>
+                </div>
+                <div class="form-group">
+                    <select id="cycle_length" name="cycle_length" class="form-select" required>
+                        <option value="">Select cycle length</option>
+                        <option value="21-24">21-24 days</option>
+                        <option value="25-28">25-28 days</option>
+                        <option value="29-32">29-32 days</option>
+                        <option value="33-35">33-35 days</option>
+                        <option value="36+">36+ days</option>
+                        <option value="unknown">I don't know</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Question 4: Trying to Conceive -->
+            <div class="form-section">
+                <div class="question-header">
+                    <span class="question-number">4</span>
+                    <h3>How long have you been trying to conceive?</h3>
+                </div>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="trying_duration" value="not_trying" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">Not actively trying</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="trying_duration" value="less_than_6" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">Less than 6 months</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="trying_duration" value="6_to_12" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">6-12 months</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="trying_duration" value="more_than_12" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">More than 12 months</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 5: Medical Conditions -->
+            <div class="form-section">
+                <div class="question-header">
+                    <span class="question-number">5</span>
+                    <h3>Do you have any known fertility-related conditions?</h3>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="conditions" value="pcos">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">PCOS (Polycystic Ovary Syndrome)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="conditions" value="endometriosis">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Endometriosis</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="conditions" value="thyroid">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Thyroid Issues</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="conditions" value="none">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">None of the above</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 6: Lifestyle Factors -->
+            <div class="form-section">
+                <div class="question-header">
+                    <span class="question-number">6</span>
+                    <h3>Which lifestyle factors apply to you?</h3>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="lifestyle" value="smoking">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Smoking</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="lifestyle" value="alcohol">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Regular alcohol consumption</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="lifestyle" value="exercise">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Regular exercise (3+ times/week)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="lifestyle" value="stress">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">High stress levels</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="lifestyle" value="healthy">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Generally healthy lifestyle</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 7: Previous Pregnancies -->
+            <div class="form-section">
+                <div class="question-header">
+                    <span class="question-number">7</span>
+                    <h3>Have you been pregnant before?</h3>
+                </div>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="previous_pregnancy" value="yes_successful" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">Yes, successful pregnancy</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="previous_pregnancy" value="yes_miscarriage" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">Yes, but had miscarriage(s)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="previous_pregnancy" value="no" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">No</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary btn-large">
+                    <i class="fas fa-calculator"></i>
+                    Calculate Fertility Prediction
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Section (hidden initially) -->
+    <div id="resultsSection" class="results-container" style="display: none;">
+        <div class="results-header">
+            <i class="fas fa-chart-line"></i>
+            <h2>Your Fertility Prediction</h2>
+        </div>
+        <div id="resultsContent" class="results-content">
+            <!-- Results will be populated here -->
+        </div>
+        <div class="results-actions">
+            <button onclick="resetForm()" class="btn-secondary">
+                <i class="fas fa-redo"></i>
+                Take Assessment Again
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('fertilityForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Collect form data
+        const formData = {
+            age: parseInt(document.getElementById('age').value),
+            cycle_regularity: document.querySelector('input[name="cycle_regularity"]:checked').value,
+            cycle_length: document.getElementById('cycle_length').value,
+            trying_duration: document.querySelector('input[name="trying_duration"]:checked').value,
+            conditions: Array.from(document.querySelectorAll('input[name="conditions"]:checked')).map(cb => cb.value),
+            lifestyle: Array.from(document.querySelectorAll('input[name="lifestyle"]:checked')).map(cb => cb.value),
+            previous_pregnancy: document.querySelector('input[name="previous_pregnancy"]:checked').value
+        };
+
+        // Show loading
+        const submitBtn = document.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating...';
+
+        try {
+            const response = await fetch('/api/predict-fertility', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                displayResults(data);
+            } else {
+                alert('Error: ' + (data.error || 'Failed to calculate prediction'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
+
+    function displayResults(data) {
+        const results = data.prediction;
+        const resultsContent = document.getElementById('resultsContent');
+        
+        // Calculate fertility score percentage
+        const score = results.fertility_score;
+        const scoreColor = score >= 70 ? '#4CAF50' : score >= 50 ? '#FF9800' : '#F44336';
+        
+        resultsContent.innerHTML = `
+            <div class="score-card">
+                <div class="score-circle" style="border-color: ${scoreColor}">
+                    <div class="score-value" style="color: ${scoreColor}">${score}%</div>
+                    <div class="score-label">Fertility Score</div>
+                </div>
+            </div>
+            
+            <div class="prediction-card">
+                <h3><i class="fas fa-lightbulb"></i> Prediction</h3>
+                <p class="prediction-text">${results.prediction_text}</p>
+            </div>
+            
+            <div class="insights-card">
+                <h3><i class="fas fa-info-circle"></i> Key Insights</h3>
+                <ul class="insights-list">
+                    ${results.insights.map(insight => `<li><i class="fas fa-check"></i> ${insight}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <div class="recommendations-card">
+                <h3><i class="fas fa-heart"></i> Recommendations</h3>
+                <ul class="recommendations-list">
+                    ${results.recommendations.map(rec => `<li><i class="fas fa-arrow-right"></i> ${rec}</li>`).join('')}
+                </ul>
+            </div>
+            
+            ${results.fertile_window ? `
+            <div class="fertile-window-card">
+                <h3><i class="fas fa-calendar-check"></i> Estimated Fertile Window</h3>
+                <p class="fertile-window-text">${results.fertile_window}</p>
+            </div>
+            ` : ''}
+            
+            <div class="disclaimer">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p><strong>Disclaimer:</strong> This is a predictive tool based on general information and should not replace professional medical advice. Please consult with a healthcare provider for personalized fertility guidance.</p>
+            </div>
+        `;
+        
+        // Show results, hide form
+        document.getElementById('pregnancyForm').style.display = 'none';
+        document.getElementById('resultsSection').style.display = 'block';
+        
+        // Scroll to results
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetForm() {
+        document.getElementById('fertilityForm').reset();
+        document.getElementById('pregnancyForm').style.display = 'block';
+        document.getElementById('resultsSection').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+{% endblock %}
+
